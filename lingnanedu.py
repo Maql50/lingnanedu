@@ -6,12 +6,13 @@ import urllib
 import re
 import cookielib
 
+#设置文件编码格式
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
 #获取表格
 def gettable(score_html):
 	trs = re.search('<table class="datelist" cellspacing="0" cellpadding="3" border="0" id="Datagrid1" style="DISPLAY:block">(.*)</table>',score_html, re.S).group(1)
-	print trs
 	return trs;
 
 #获取首页html
@@ -44,14 +45,15 @@ def output(html_score):
 
 
 if __name__ == '__main__':	
-	#初始化基本内容
+	#获取主页内容
 	url = 'http://202.192.143.243/(51gpbo45h4ah5yrvylalsu45)/default6.aspx'
-	id = '2013874116'
-	psw = 'zc12230109'
-
 	page = getMainPage(url)
 
-	#设置post数据
+	#设置用户名和密码
+	id = '2013874130'
+	psw = 'zxcvbnm741'
+
+	#设置登录时post数据
 	postdate = urllib.urlencode({
 		'__VIEWSTATE':getviewstatus(page),
 		'tnameXw':'yhdl',
@@ -71,10 +73,14 @@ if __name__ == '__main__':
 	#设置cookie
 	cookie = cookielib.CookieJar()
 	opener = urllib2.build_opener(urllib2.HTTPHandler(cookie))
+	
+	#提交登录请求
 	myrequest = urllib2.Request(url, postdate, headers)
+	#获取页面
 	loginPage = opener.open(myrequest).read()
 	page = unicode(loginPage, 'gb2312').encode("utf-8") 
 
+	#设置个人成绩页面数据
 	getdata = urllib.urlencode({
 		'xh':id,
 		'xm':unicode(getName(page, id),'utf-8').encode('gb2312'),
@@ -82,7 +88,7 @@ if __name__ == '__main__':
 	})
  
 
-
+	#设置个人成绩页面head
 	head = {
 		'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
 		'Accept-Encoding':'gzip, deflate, sdch',
@@ -91,19 +97,19 @@ if __name__ == '__main__':
 		'Connection':'keep-alive',
 		'Content-Type':'application/x-www-form-urlencoded',
 		'Host':'202.192.143.243',
-		'Cookie':cookie,
+		#Cookie':cookie,
 		'Origin':'http://222.24.19.201',
 		'Pragma':'no-cache',
 		'Upgrade-Insecure-Requests':1,		
 		'Referer':'http://202.192.143.243/(51gpbo45h4ah5yrvylalsu45)/xs_main.aspx?xh='+getdata,
 		'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
 		}
-
+	#进入个人成绩查询页面
  	myrequest = urllib2.Request('http://202.192.143.243/(51gpbo45h4ah5yrvylalsu45)/xscjcx.aspx?'+getdata, None, head)
-	#获取第二个登录页面
 	loginPage = unicode(opener.open(myrequest).read(), 'gb2312').encode('utf-8')
  
 
+	#设置进入历年成绩页面数据
 	data = urllib.urlencode({
 		"__EVENTTARGET": "",
 		"__EVENTARGUMENT":"",
@@ -115,10 +121,12 @@ if __name__ == '__main__':
 		"ddl_kcxz":""
 	}) 
 
+	#进入理念成绩页面
 	myrequest = urllib2.Request('http://202.192.143.243/(51gpbo45h4ah5yrvylalsu45)/xscjcx.aspx?'+getdata,data, head)
-	#获取第三个页面，即成绩页面
 	html = opener.open(myrequest)
 	result = unicode(html.read(), 'gb2312').encode('utf-8')
+	
+	#输出成绩内容
 	output(result)
  
 
