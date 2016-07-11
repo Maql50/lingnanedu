@@ -1,5 +1,4 @@
 # encoding:utf-8
-import requests
 import sys
 import urllib2
 import urllib
@@ -17,9 +16,10 @@ def gettable(score_html):
 
 #获取首页html
 def getMainPage(url):
-	html_cont = requests.get(url)
-	html_cont.encoding = 'gb2312'
-	return html_cont.text
+	response = urllib2.urlopen(url)
+	html_cont = response.read()
+	html_cont = unicode(html_cont, 'gb2312').encode('utf-8') 
+	return html_cont 
 
 #获取页面viewstatus
 def getviewstatus(html_cont):
@@ -54,6 +54,7 @@ if __name__ == '__main__':
 	psw = 'zxcvbnm741'
 
 	#设置登录时post数据
+	#urllib.urlencode编码字典转换成url参数 
 	postdate = urllib.urlencode({
 		'__VIEWSTATE':getviewstatus(page),
 		'tnameXw':'yhdl',
@@ -74,7 +75,7 @@ if __name__ == '__main__':
 	cookie = cookielib.CookieJar()
 	opener = urllib2.build_opener(urllib2.HTTPHandler(cookie))
 	
-	#提交登录请求
+	#提交登录请求,POST
 	myrequest = urllib2.Request(url, postdate, headers)
 	#获取页面
 	loginPage = opener.open(myrequest).read()
