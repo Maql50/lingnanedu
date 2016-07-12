@@ -12,5 +12,7 @@ def gettds(html_cont):
 if __name__ == '__main__':
 	url = "https://github.com/racaljk/hosts/blob/master/hosts"
 	page = getpage(url)
+	hosts = open("c:/windows/system32/drivers/etc/hosts", "a")
 	for line in gettds(page):
-		print line
+		hosts.write(line+"\n")
+	hosts.close();
